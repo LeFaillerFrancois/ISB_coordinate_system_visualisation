@@ -23,7 +23,7 @@
 Tried to follow the recommandations for [upper body](https://pubmed.ncbi.nlm.nih.gov/15844264/) (Wu et al. 2005) and [lower body](https://pubmed.ncbi.nlm.nih.gov/11934426/) (Wu et al. 2002) from [ISB](https://isbweb.org/). The marker set used in our lab doesn't allow for exact following of the recommandations.
 
 ## Limitations 
-Yet the COP GRF is not accurate. Also markers trajectory were not low pass filtered. Euler angles calculation at the end were not compared with the ones of a known model/software such as Opensim.
+Yet the COP GRF is not accurate. Euler angles calculation at the end were not compared with the ones of a known model/software such as Opensim.
 <br>
 Also we used many devices and sensors at the same time, that's why there are specific function in the python script to get the trigger and synch all the files (even if all of them aren't used in this script). 
 
