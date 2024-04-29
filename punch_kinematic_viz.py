@@ -15,6 +15,7 @@ import pandas as pd
 import statistics # Could serve for peak detection
 from scipy.signal import find_peaks
 from scipy import signal
+from scipy.interpolate import interp1d
 
 import scipy.io
 # from pyomeca import Analogs # For EMGs, not analysed in this script
@@ -86,6 +87,16 @@ marker_names = data_info["Labels"]
 marker_data = data_info["Data"]
 print(marker_names)
 
+def interpolate_missing_values(col):
+    #col = array.copy()
+    col_non_missing_indices = np.where(np.isfinite(col))[0]
+    if len(col_non_missing_indices) > 0:
+        linear_quadra = interp1d(col_non_missing_indices, col[col_non_missing_indices], kind='quadratic', fill_value="extrapolate")
+        col_interp = linear_quadra(np.arange(len(col)))
+    else:
+        col_interp = col
+    return col_interp
+
 # Getting a marker by its name. Synch it with the force sensor.
 def select_marker(data_info, marker_name) :
     marker_data = data_info["Data"]
@@ -95,8 +106,9 @@ def select_marker(data_info, marker_name) :
     marker_at_trigger = marker[:,marker.shape[1]-round(time*mocap_frequency):marker.shape[1]]
 
     # Filtering 
-    #marker_filtered = LP_filter(marker_at_trigger, 6, mocap_frequency)
-    return marker_at_trigger#marker_filtered
+    marker_at_trigger_without_missing_values = np.apply_along_axis(interpolate_missing_values, axis=1, arr=marker_at_trigger)
+    marker_filtered = LP_filter(marker_at_trigger_without_missing_values, 6, mocap_frequency)
+    return marker_filtered
 
 first_frame = marker_data.shape[2]-round(time*mocap_frequency)
 # Actual number of frames 
@@ -106,6 +118,7 @@ frames = random_marker.shape[1]  # Number of frames
 ###############################################################################
 ###########################RETRIEVING MARKERS##################################
 ###############################################################################
+
 
 # Pelvis
 REIAS = select_marker(data_info, "REIAS")
